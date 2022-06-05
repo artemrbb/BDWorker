@@ -1,18 +1,31 @@
-﻿using System;
+﻿using InsertInto.ModelComponents;
+using Microsoft.Win32;
+using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
+using UltimateCore.AppManagement;
+using UltimateCore.CN;
+using UltimateCore.EventManagement;
 
 namespace InsertInto.MVVM
 {
-    internal class InsertIntoViewModel
+    public class InsertIntoViewModel : Notifier, IHandle<List<DTP>>, IHandle<DTP>
     {
         #region Constructor
 
-        public InsertIntoViewModel()
+        public InsertIntoViewModel(AppFactory appFactory, EventAggregator eventAggregator, ObservableCollection<DTP> dtps)
         {
-            _model = new InsertIntoModel();
+            _appFactory = appFactory;
+            _model = _appFactory.GetClass<InsertIntoModel>();
+            _eventAggregator = eventAggregator;
+            _eventAggregator.Subscribe(this);
+            
+            _dtps = dtps;
+            _dtpsCoordinates = new ObservableCollection<DTP>();
         }
 
         #endregion
@@ -20,12 +33,85 @@ namespace InsertInto.MVVM
         #region Fields
 
         InsertIntoModel _model;
+        private readonly AppFactory _appFactory;
+        private ObservableCollection<DTP> _dtps;
+        private ObservableCollection<DTP> _dtpsCoordinates;
+        private EventAggregator _eventAggregator;
+
+        #endregion
+
+        #region Properties
+
+        public ObservableCollection<DTP> Dtps { get => _dtps; set { _dtps = value; OnPropertyChanged(() => Dtps); } }
+        public ObservableCollection<DTP> DtpsCoordinates { get => _dtpsCoordinates; set { _dtpsCoordinates = value; OnPropertyChanged(() => DtpsCoordinates); } }
 
         #endregion
 
         #region Methods
 
 
+
+        #endregion
+
+        #region Command
+
+
+        public Command NewFileCommand
+        { 
+            get => new Command(() =>
+            {
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.Filter = "Файлы PDF (*.pdf)|*.pdf";
+                openFileDialog.InitialDirectory = @"C:\Dowloads";
+                if (openFileDialog.ShowDialog() == true)
+                {
+                    _model.PathFile = openFileDialog.FileName;
+                    var res = _model.Converter();
+                    if (res.IsOk) 
+                    {
+                        Dtps.Clear();
+                        foreach (var dtp in res.ResultObject) 
+                        {
+                            Dtps.Add(dtp);
+                        }
+                        OnPropertyChanged(() => Dtps);
+                    }
+                }
+            });
+        }
+        public Command CopyCommand
+        {
+            get => new Command(() =>
+            {
+                string text = string.Empty;
+                //foreach () 
+                //{
+
+                //}
+                Clipboard.SetText(text);
+            });
+        }
+
+        public bool Handled(List<DTP> data)
+        {
+            DtpsCoordinates.Clear();
+            foreach (var dtp in data) 
+            {
+                DtpsCoordinates.Add(dtp);
+            }
+
+            OnPropertyChanged(() => DtpsCoordinates);
+            return true;
+        }
+
+        public bool Handled(DTP data)
+        {
+            Dtps.Remove(data);
+            DtpsCoordinates.Add(data);
+            OnPropertyChanged(() => Dtps);
+            OnPropertyChanged(() => DtpsCoordinates);
+            return true;
+        }
 
         #endregion
     }

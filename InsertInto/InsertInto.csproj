@@ -85,6 +85,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ModelComponents\DTP.cs" />
+    <Compile Include="ModelComponents\InsertWorker.cs" />
     <Compile Include="MVVM\InsertIntoModel.cs" />
     <Compile Include="MVVM\InsertIntoView.xaml.cs">
       <DependentUpon>InsertIntoView.xaml</DependentUpon>
@@ -120,6 +121,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Contracts\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

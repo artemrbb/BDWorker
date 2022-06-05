@@ -17,26 +17,5 @@ namespace InsertInto.MVVM
         }
 
         #endregion
-
-        #region Fields
-
-        private string _pathFile;
-
-        #endregion
-
-        #region Commands
-
-        private void MenuItem_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.Filter = "Файлы PDF (*.pdf)|*.pdf";
-            openFileDialog.InitialDirectory = @"C:\Dowloads";
-            if (openFileDialog.ShowDialog() == true) 
-            {
-                _pathFile = openFileDialog.FileName;
-            }
-        }
-
-        #endregion
     }
 }
