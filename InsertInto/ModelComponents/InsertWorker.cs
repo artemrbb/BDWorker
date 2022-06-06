@@ -1,11 +1,9 @@
 ﻿using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using UltimateCore.AppManagement;
 using UltimateCore.EventManagement;
 using UltimateCore.LRI;
@@ -34,17 +32,20 @@ namespace InsertInto.ModelComponents
         #region Properties
 
         public string PathFile { get; private set; }
+        public string FileName { get; private set; }
 
 
         #endregion
 
         #region Methods
 
-        public Result<List<DTP>> Parser(string pathFile) 
+        public Result<List<DTP>> Parser(string pathFile, string fileName) 
         {
             return new Result<List<DTP>>(() =>
             {
                 PathFile = pathFile;
+                FileName = fileName;
+
                 int pageCount = 0;
                 PdfReader pdfReader = new PdfReader(PathFile);
                 pageCount = pdfReader.NumberOfPages;
@@ -65,22 +66,32 @@ namespace InsertInto.ModelComponents
                 List<string> resLines = new List<string>();
 
                 bool isFirstLine = false;
+                char[] arrayChar;
+
                 int j = 0;
                 foreach (string page in parseString)
                 {
                     var splitLines = page.Split('\n');
                     var lines = new List<string>(splitLines);
+                    string idParse;
                     for (int i = 0; i <= lines.Count - 1; i++)
                     {
-
+                        idParse = string.Empty;
                         if (isFirstLine == false)
                         {
                             isFirstLine = true;
                             continue;
                         }
 
+                        arrayChar = lines[i].ToCharArray();
+                        for (var c = 0; c < arrayChar.Length - 1; c++)
+                        {
+                            if (arrayChar[c] == ' ')
+                                break;
+                            idParse += arrayChar[c].ToString();
+                        }
 
-                        if (lines[i].StartsWith("36")) // Надо дороботать и избавиться от этого условия
+                        if (lines[i].StartsWith("36") && idParse.Length == 9) // Надо дороботать и избавиться от этого условия
                         {
                             resLines.Add($"{++j} " + lines[i]);
                             continue;
@@ -104,15 +115,20 @@ namespace InsertInto.ModelComponents
                     string type = null;
 
                     matchLine = Regex.Match(line, @"(-?\d+(?:\,\d+))");
-                    if (matchLine.Success == false)
-                    {
-                        // тут надо придумать логику где клиенту выходит сообщение о том что в строчке нет координатов, и необходимо их внести
-                    }
+                    //if (matchLine.Success == false)
+                    //{
+                    //    // тут надо придумать логику где клиенту выходит сообщение о том что в строчке нет координатов, и необходимо их внести
+                    //}
 
                     var resSplit = line.Split(' ');
                     var typeOff = false;
                     for (int i = 0; i < resSplit.Length - 1; i++)
                     {
+                        if (int.TryParse(resSplit[1], out int resIntParse)) 
+                        {
+                            id = resIntParse;
+                        }
+
                         if (i > 3 && typeOff == false)
                         {
                             if (resSplit[i].StartsWith("Самарская"))
@@ -127,20 +143,18 @@ namespace InsertInto.ModelComponents
                         if (matchCoordinates.Success == true)
                         {
                             var rez = matchCoordinates.Groups[1].Value;
-                            if (double.TryParse(rez, out double resParse))
+                            if (double.TryParse(rez, out double resParse)) // ошибка в том что если долгота больше 52, то его занесет широтой
                             {
-                                if (resParse > 52)
+                                if (longitude != resParse && longitude != 0)
                                 {
                                     latitude = resParse;
+                                    continue;
                                 }
-                                else if (resParse < 52 && resParse != 0)
-                                {
-                                    longitude = resParse;
-                                }
+                                longitude = resParse;
                             }
                         }
                     }
-                    _dtpList.Add(new DTP("ran", id, type, longitude, latitude, line));
+                    _dtpList.Add(new DTP(FileName, id, type, longitude, latitude, line));
                 }
 
                 var actual = _dtpList.Where(p => p.Latitude != "0" || p.Longitude != "0").ToList();

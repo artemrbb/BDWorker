@@ -1,8 +1,5 @@
 ﻿using InsertInto.ModelComponents;
-using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.parser;
 using System.Collections.Generic;
-using System.Text;
 using UltimateCore.LRI;
 
 namespace InsertInto.MVVM
@@ -20,17 +17,15 @@ namespace InsertInto.MVVM
         #region Fields
 
         private string _pathFile;
-        private List<string> _parseString;
+        private string _fileName;
         private readonly InsertWorker _insertWorker;
-
-        public string PathFile { get => _pathFile; set => _pathFile = value; }
-
 
         #endregion
 
         #region Properties
 
-
+        public string PathFile { get => _pathFile; set => _pathFile = value; }
+        public string FileName { get => _fileName; set => _fileName = value; }
 
         #endregion
 
@@ -40,7 +35,7 @@ namespace InsertInto.MVVM
         //Сделать рефакторинг конверта. Разобраться с полями
         public Result<List<DTP>> Converter()
         {
-            return _insertWorker.Parser(_pathFile);
+            return _insertWorker.Parser(_pathFile, _fileName);
         }
         #endregion
     }

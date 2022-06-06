@@ -49,7 +49,7 @@ namespace InsertInto.ModelComponents
 
         public string InsertInto()
         {
-            return $@"insert into {TableName} values('{Id}', '{Type}', '{Latitude}', '{Longitude}')";
+            return $@"insert into {TableName} values('{Id}','{Type}','{Latitude.Replace(',','.')}','{Longitude.Replace(',','.')}');";
         }
 
         public void Dowload() 

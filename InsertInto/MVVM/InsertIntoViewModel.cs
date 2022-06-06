@@ -1,11 +1,8 @@
 ﻿using InsertInto.ModelComponents;
 using Microsoft.Win32;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.IO;
 using System.Windows;
 using UltimateCore.AppManagement;
 using UltimateCore.CN;
@@ -24,6 +21,7 @@ namespace InsertInto.MVVM
             _eventAggregator = eventAggregator;
             _eventAggregator.Subscribe(this);
             
+            _isOpenFile = false;
             _dtps = dtps;
             _dtpsCoordinates = new ObservableCollection<DTP>();
         }
@@ -37,6 +35,7 @@ namespace InsertInto.MVVM
         private ObservableCollection<DTP> _dtps;
         private ObservableCollection<DTP> _dtpsCoordinates;
         private EventAggregator _eventAggregator;
+        private bool _isOpenFile;
 
         #endregion
 
@@ -65,7 +64,10 @@ namespace InsertInto.MVVM
                 openFileDialog.InitialDirectory = @"C:\Dowloads";
                 if (openFileDialog.ShowDialog() == true)
                 {
+                    _isOpenFile = true;
                     _model.PathFile = openFileDialog.FileName;
+                    _model.FileName = Path.GetFileName(openFileDialog.FileName).Replace(".pdf", "");
+                    ;
                     var res = _model.Converter();
                     if (res.IsOk) 
                     {
@@ -83,12 +85,16 @@ namespace InsertInto.MVVM
         {
             get => new Command(() =>
             {
-                string text = string.Empty;
-                //foreach () 
-                //{
+                if (_isOpenFile == true) 
+                {
+                    string text = string.Empty;
+                    foreach (var dtps in DtpsCoordinates)
+                    {
+                        text += dtps.InsertInto() + "\n";
+                    }
 
-                //}
-                Clipboard.SetText(text);
+                    Clipboard.SetText(text);
+                }
             });
         }
 

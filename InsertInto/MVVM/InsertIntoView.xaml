@@ -46,9 +46,10 @@
                 </ScrollViewer>
             </TabItem>
             <TabItem Header="С координатами">
-                <StackPanel Orientation="Vertical">
-                    <Button Content="Скопировать всё" Command="{Binding CopyCommand}"/>
                 <ScrollViewer>
+                    <StackPanel Orientation="Vertical">
+                    <Button Content="Скопировать всё" Command="{Binding CopyCommand}"/>
+                
                     <ItemsControl ItemsSource="{Binding DtpsCoordinates}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
@@ -65,8 +66,9 @@
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                     </ItemsControl>
-                    </ScrollViewer>
+                    
                 </StackPanel>
+                </ScrollViewer>
             </TabItem>
         </TabControl>
     </Grid>
