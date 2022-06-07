@@ -1,5 +1,6 @@
 ﻿using iTextSharp.text.pdf;
 using iTextSharp.text.pdf.parser;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -39,12 +40,11 @@ namespace InsertInto.ModelComponents
 
         #region Methods
 
-        public Result<List<DTP>> Parser(string pathFile, string fileName) 
+        public Result<List<DTP>> Parser(string pathFile) 
         {
             return new Result<List<DTP>>(() =>
             {
                 PathFile = pathFile;
-                FileName = fileName;
 
                 int pageCount = 0;
                 PdfReader pdfReader = new PdfReader(PathFile);
@@ -84,14 +84,14 @@ namespace InsertInto.ModelComponents
                         }
 
                         arrayChar = lines[i].ToCharArray();
-                        for (var c = 0; c < arrayChar.Length - 1; c++)
+                        for (var c = 0; c < arrayChar.Length - 1; c++) // цикл проверить
                         {
                             if (arrayChar[c] == ' ')
                                 break;
                             idParse += arrayChar[c].ToString();
                         }
 
-                        if (lines[i].StartsWith("36") && idParse.Length == 9) // Надо дороботать и избавиться от этого условия
+                        if (lines[i].StartsWith("36") && idParse.Length == 9)
                         {
                             resLines.Add($"{++j} " + lines[i]);
                             continue;
@@ -104,7 +104,6 @@ namespace InsertInto.ModelComponents
                 }
 
                 // Логика на сбор данных
-                Match matchLine;
                 Match matchCoordinates;
                 _dtpList.Clear();
                 foreach (string line in resLines)
@@ -113,20 +112,34 @@ namespace InsertInto.ModelComponents
                     double longitude = 0;
                     double latitude = 0;
                     string type = null;
-
-                    matchLine = Regex.Match(line, @"(-?\d+(?:\,\d+))");
-                    //if (matchLine.Success == false)
-                    //{
-                    //    // тут надо придумать логику где клиенту выходит сообщение о том что в строчке нет координатов, и необходимо их внести
-                    //}
+                    string tableName = null;
 
                     var resSplit = line.Split(' ');
                     var typeOff = false;
                     for (int i = 0; i < resSplit.Length - 1; i++)
                     {
-                        if (int.TryParse(resSplit[1], out int resIntParse)) 
+                        if (int.TryParse(resSplit[1], out int resIntParse))
                         {
                             id = resIntParse;
+                        }
+
+                        if (DateTime.TryParse(resSplit[i], out DateTime resParseDate)) // парсит время, а не дату
+                        {
+                            switch (resParseDate.Month)
+                            {
+                                case 01: tableName = "januaryTable"; break;
+                                case 02: tableName = "februaryTable"; break;
+                                case 03: tableName = "marchTable"; break;
+                                case 04: tableName = "aprilTable"; break;
+                                case 05: tableName = "mayTable"; break;
+                                case 06: tableName = "juneTable"; break;
+                                case 07: tableName = "julyTable"; break;
+                                case 08: tableName = "augustTable"; break;
+                                case 09: tableName = "septemberTable"; break;
+                                case 10: tableName = "octoberTable"; break;
+                                case 11: tableName = "novemberTable"; break;
+                                case 12: tableName = "decemberTable"; break;
+                            }
                         }
 
                         if (i > 3 && typeOff == false)
@@ -143,7 +156,7 @@ namespace InsertInto.ModelComponents
                         if (matchCoordinates.Success == true)
                         {
                             var rez = matchCoordinates.Groups[1].Value;
-                            if (double.TryParse(rez, out double resParse)) // ошибка в том что если долгота больше 52, то его занесет широтой
+                            if (double.TryParse(rez, out double resParse))
                             {
                                 if (longitude != resParse && longitude != 0)
                                 {
@@ -154,7 +167,8 @@ namespace InsertInto.ModelComponents
                             }
                         }
                     }
-                    _dtpList.Add(new DTP(FileName, id, type, longitude, latitude, line));
+                    ;
+                    _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line));
                 }
 
                 var actual = _dtpList.Where(p => p.Latitude != "0" || p.Longitude != "0").ToList();
@@ -166,6 +180,10 @@ namespace InsertInto.ModelComponents
 
                 return _dtpList.Where(p => p.Latitude == "0" || p.Longitude == "0").ToList();
             });
+
+        }
+        private void DateParse(string date) 
+        {
         }
 
         #endregion

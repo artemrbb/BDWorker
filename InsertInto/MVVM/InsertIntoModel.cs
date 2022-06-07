@@ -17,7 +17,6 @@ namespace InsertInto.MVVM
         #region Fields
 
         private string _pathFile;
-        private string _fileName;
         private readonly InsertWorker _insertWorker;
 
         #endregion
@@ -25,17 +24,15 @@ namespace InsertInto.MVVM
         #region Properties
 
         public string PathFile { get => _pathFile; set => _pathFile = value; }
-        public string FileName { get => _fileName; set => _fileName = value; }
 
         #endregion
 
 
         #region Methods
 
-        //Сделать рефакторинг конверта. Разобраться с полями
         public Result<List<DTP>> Converter()
         {
-            return _insertWorker.Parser(_pathFile, _fileName);
+            return _insertWorker.Parser(_pathFile);
         }
         #endregion
     }

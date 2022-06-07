@@ -1,10 +1,8 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 17
-VisualStudioVersion = 17.1.32328.378
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31313.79
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BDWorker", "BDWorker\BDWorker.csproj", "{5F81A2D6-7CBA-4DCB-AE21-D0EBB9D34D4E}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InsertInto", "InsertInto\InsertInto.csproj", "{49BC2D47-DAAC-4AF0-BF68-CF8F1C854554}"
 EndProject
 Global
@@ -13,10 +11,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5F81A2D6-7CBA-4DCB-AE21-D0EBB9D34D4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5F81A2D6-7CBA-4DCB-AE21-D0EBB9D34D4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5F81A2D6-7CBA-4DCB-AE21-D0EBB9D34D4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5F81A2D6-7CBA-4DCB-AE21-D0EBB9D34D4E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{49BC2D47-DAAC-4AF0-BF68-CF8F1C854554}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{49BC2D47-DAAC-4AF0-BF68-CF8F1C854554}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49BC2D47-DAAC-4AF0-BF68-CF8F1C854554}.Release|Any CPU.ActiveCfg = Release|Any CPU

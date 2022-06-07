@@ -54,7 +54,6 @@ namespace InsertInto.MVVM
 
         #region Command
 
-
         public Command NewFileCommand
         { 
             get => new Command(() =>
@@ -66,8 +65,6 @@ namespace InsertInto.MVVM
                 {
                     _isOpenFile = true;
                     _model.PathFile = openFileDialog.FileName;
-                    _model.FileName = Path.GetFileName(openFileDialog.FileName).Replace(".pdf", "");
-                    ;
                     var res = _model.Converter();
                     if (res.IsOk) 
                     {
