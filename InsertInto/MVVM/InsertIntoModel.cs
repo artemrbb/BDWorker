@@ -27,7 +27,6 @@ namespace InsertInto.MVVM
 
         #endregion
 
-
         #region Methods
 
         public Result<List<DTP>> Converter()

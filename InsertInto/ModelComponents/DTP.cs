@@ -54,6 +54,7 @@ namespace InsertInto.ModelComponents
 
         public void Dowload() 
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US");
             if (double.TryParse(Longitude, out double lon) && double.TryParse(Latitude, out double lan) && lon != 0 && lan != 0)
             {
                 EventAggregator.GetInstance().Push(this);

@@ -2,6 +2,7 @@
 using iTextSharp.text.pdf.parser;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -50,14 +51,12 @@ namespace InsertInto.ModelComponents
                 PdfReader pdfReader = new PdfReader(PathFile);
                 pageCount = pdfReader.NumberOfPages;
 
-                var sb = new StringBuilder();
                 List<string> parseString = new List<string>();
                 for (int page = 1; page <= pageCount; page++)
                 {
                     var strategy = new SimpleTextExtractionStrategy();
                     string text = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
                     text = Encoding.UTF8.GetString(ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(text)));
-                    var res = sb.Append(text);
                     parseString.Add(text);
                 }
 
@@ -118,28 +117,15 @@ namespace InsertInto.ModelComponents
                     var typeOff = false;
                     for (int i = 0; i < resSplit.Length - 1; i++)
                     {
-                        if (int.TryParse(resSplit[1], out int resIntParse))
+                        if (int.TryParse(resSplit[i], out int resIntParse) && resSplit[i].Length == 9)
                         {
                             id = resIntParse;
                         }
 
-                        if (DateTime.TryParse(resSplit[i], out DateTime resParseDate)) // парсит время, а не дату
+                        var resDatePars = DateParse(resSplit[i]).ResultObject;
+                        if (resDatePars != null) 
                         {
-                            switch (resParseDate.Month)
-                            {
-                                case 01: tableName = "januaryTable"; break;
-                                case 02: tableName = "februaryTable"; break;
-                                case 03: tableName = "marchTable"; break;
-                                case 04: tableName = "aprilTable"; break;
-                                case 05: tableName = "mayTable"; break;
-                                case 06: tableName = "juneTable"; break;
-                                case 07: tableName = "julyTable"; break;
-                                case 08: tableName = "augustTable"; break;
-                                case 09: tableName = "septemberTable"; break;
-                                case 10: tableName = "octoberTable"; break;
-                                case 11: tableName = "novemberTable"; break;
-                                case 12: tableName = "decemberTable"; break;
-                            }
+                            tableName = resDatePars;
                         }
 
                         if (i > 3 && typeOff == false)
@@ -167,7 +153,7 @@ namespace InsertInto.ModelComponents
                             }
                         }
                     }
-                    ;
+
                     _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line));
                 }
 
@@ -182,8 +168,36 @@ namespace InsertInto.ModelComponents
             });
 
         }
-        private void DateParse(string date) 
+        private Result<string> DateParse(string date) 
         {
+            return new Result<string>(() =>
+            {
+                IFormatProvider formatProvider = null;
+
+                if (DateTime.TryParse(date, formatProvider, DateTimeStyles.NoCurrentDateDefault, out DateTime resParseDate))
+                {
+                    if (resParseDate.Year != DateTime.MinValue.Year)
+                    {
+                        switch (resParseDate.Month)
+                        {
+                            case 01: return "januaryTable";
+                            case 02: return "februaryTable";
+                            case 03: return "marchTable";
+                            case 04: return "aprilTable";
+                            case 05: return "mayTable";
+                            case 06: return "juneTable";
+                            case 07: return "julyTable";
+                            case 08: return "augustTable";
+                            case 09: return "septemberTable";
+                            case 10: return "octoberTable";
+                            case 11: return "novemberTable";
+                            case 12: return "decemberTable";
+                        }
+                    }
+                }
+
+                return null;
+            });
         }
 
         #endregion
