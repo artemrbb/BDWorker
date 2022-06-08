@@ -153,10 +153,9 @@ namespace InsertInto.ModelComponents
                             }
                         }
                     }
-
+                    ;
                     _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line));
                 }
-
                 var actual = _dtpList.Where(p => p.Latitude != "0" || p.Longitude != "0").ToList();
                 //foreach (var actDtp in actual) 
                 //{

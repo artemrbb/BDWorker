@@ -109,6 +109,7 @@ namespace InsertInto.MVVM
 
         public bool Handled(DTP data)
         {
+            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-RU");
             Dtps.Remove(data);
             DtpsCoordinates.Add(data);
             OnPropertyChanged(() => Dtps);
