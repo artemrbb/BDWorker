@@ -14,7 +14,7 @@ namespace InsertInto
 
         public App()
         {
-            _appFactory =  AppFactory.GetInstance();
+            _appFactory = AppFactory.GetInstance();
             _view = _appFactory.GetClass<InsertIntoView>();
             _view.Show();
         }
