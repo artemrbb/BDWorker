@@ -30,6 +30,7 @@ namespace InsertInto.ModelComponents
             npgsql.Open();
             if (npgsql.FullState != ConnectionState.Broken || npgsql.FullState != ConnectionState.Closed)
             {
+                //d
                 NpgsqlCommand command = new NpgsqlCommand("INSERT INTO test values('asds','123321');", npgsql); // параметры конструктора комманд, подставляются либо команда которая отображает таблицу либ ввода и изменения данных
                 int a = command.ExecuteNonQuery(); // метод для вывода успешного или не успешного ввода или изменения данных
                 NpgsqlDataReader reader = command.ExecuteReader(); // метод для вывода информации о таблице
