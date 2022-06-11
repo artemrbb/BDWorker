@@ -22,7 +22,8 @@ namespace InsertInto.ModelComponents
 
             _eventAggregator = EventAggregator.GetInstance();
             _bdWorker = BDWorker.GetInstance();
-            _bdWorker.SQLConnected();
+            //var res = _bdWorker.SQLConnected();
+            ;
         }
 
         #endregion
@@ -125,7 +126,7 @@ namespace InsertInto.ModelComponents
                             id = resIntParse;
                         }
 
-                        var resDatePars = DateParse(resSplit[i]).ResultObject;
+                        var resDatePars = DateParse(resSplit[i]).ResultObject; //исключить последнюю строчку в первом пэйдж. т.к написана дата ненужная
                         if (resDatePars != null) 
                         {
                             tableName = resDatePars;
@@ -165,7 +166,7 @@ namespace InsertInto.ModelComponents
                 //    actDtp.Dowload();
                 //}
                 _eventAggregator.Push(actual);
-
+                ;
                 return _dtpList.Where(p => p.Latitude == "0" || p.Longitude == "0").ToList();
             });
 
@@ -174,27 +175,22 @@ namespace InsertInto.ModelComponents
         {
             return new Result<string>(() =>
             {
-                IFormatProvider formatProvider = null;
-
-                if (DateTime.TryParse(date, formatProvider, DateTimeStyles.NoCurrentDateDefault, out DateTime resParseDate))
+                if (DateTime.TryParseExact(date, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime resParseDate))
                 {
-                    if (resParseDate.Year != DateTime.MinValue.Year)
+                    switch (resParseDate.Month)
                     {
-                        switch (resParseDate.Month)
-                        {
-                            case 01: return "januaryTable";
-                            case 02: return "februaryTable";
-                            case 03: return "marchTable";
-                            case 04: return "aprilTable";
-                            case 05: return "mayTable";
-                            case 06: return "juneTable";
-                            case 07: return "julyTable";
-                            case 08: return "augustTable";
-                            case 09: return "septemberTable";
-                            case 10: return "octoberTable";
-                            case 11: return "novemberTable";
-                            case 12: return "decemberTable";
-                        }
+                        case 01: return "januaryTable";
+                        case 02: return "februaryTable";
+                        case 03: return "marchTable";
+                        case 04: return "aprilTable";
+                        case 05: return "mayTable";
+                        case 06: return "juneTable";
+                        case 07: return "julyTable";
+                        case 08: return "augustTable";
+                        case 09: return "septemberTable";
+                        case 10: return "octoberTable";
+                        case 11: return "novemberTable";
+                        case 12: return "decemberTable";
                     }
                 }
 
