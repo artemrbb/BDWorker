@@ -2,11 +2,11 @@
 using Microsoft.Win32;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.IO;
 using System.Windows;
 using UltimateCore.AppManagement;
 using UltimateCore.CN;
 using UltimateCore.EventManagement;
+using System.Linq;
 
 namespace InsertInto.MVVM
 {
@@ -92,6 +92,19 @@ namespace InsertInto.MVVM
 
                     Clipboard.SetText(text);
                 }
+            });
+        }
+
+        public Command DownloadCommand 
+        {
+            get => new Command(() =>
+            {
+                if (DtpsCoordinates.Count == 0) 
+                {
+                    return;
+                }
+                List<DTP> dtps = DtpsCoordinates.ToList();
+                var resBDWork = _model.BDWork(dtps);
             });
         }
 

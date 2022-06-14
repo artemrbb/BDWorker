@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Collections.Generic;
 using System.Data;
 using System.Windows;
 using UltimateCore.AppManagement;
@@ -19,26 +20,23 @@ namespace InsertInto.ModelComponents
 
         #region Fields
 
-        private string _stringConnection = "Host=localhost;Username=postgres;Password=linkoln;Database=postgres";
+        private string _stringConnection = "Host=10.200.10.112;Username=cuba;Password=cuba;Database=smarts";
 
         #endregion
 
         #region Methods
 
-        public Result<bool> SQLConnected()
+        public Result<NpgsqlConnection> SQLConnected()
         {
-            return new Result<bool>(() =>
+            return new Result<NpgsqlConnection>(() =>
             {
                 NpgsqlConnection npgsql = new NpgsqlConnection(_stringConnection);
                 npgsql.Open();
-                var res = CreateTable("artem", npgsql);
-                ;
-
-                return true;
+                return npgsql;
             });
         }
 
-        private Result<bool> CreateTable(string tableName, NpgsqlConnection npgsql) 
+        public Result<bool> CreateTable(string tableName, NpgsqlConnection npgsql) 
         {
             return new Result<bool>(() =>
             {
@@ -61,22 +59,22 @@ namespace InsertInto.ModelComponents
                             default: MessageBox.Show("Ошибка в BDWorker'e. В switch'e не обработана ошибка"); break;
                         }
                     }
-                    //NpgsqlCommand command = new NpgsqlCommand("INSERT INTO test values('asds','123321');", npgsql); // параметры конструктора комманд, подставляются либо команда которая отображает таблицу либ ввода и изменения данных
-                    //int a = command.ExecuteNonQuery(); // метод для вывода успешного или не успешного ввода или изменения данных
-                    //NpgsqlDataReader reader = command.ExecuteReader(); // метод для вывода информации о таблице
-                    //                                                   //if (reader.HasRows)                                 нужно дергать тот или иной метод в зависимости от нужного применения,
-                    //                                                   //{                                                   если нужно создать новый тейбл, то дергать  ExecuteNonQuery()
-                    //                                                   //    var res = reader.GetFieldType(0);               если псмотреть таблицу то ExecuteReader()
-                    //                                                   //    string str = reader.GetString(0);
-                    //                                                   //    ;
-                    //                                                   //}
-                    //                                                   //;
                 }
                 else
                 {
                     MessageBox.Show("Соединение не доступно");
                 }
 
+                return true;
+            });
+        }
+
+        public Result<bool> InsertInto(string intoCommand, NpgsqlConnection npgsql) 
+        {
+            return new Result<bool>(() =>
+            {
+                NpgsqlCommand insertCommand = new NpgsqlCommand(intoCommand, npgsql);
+                int resInsert = insertCommand.ExecuteNonQuery();
                 return true;
             });
         }

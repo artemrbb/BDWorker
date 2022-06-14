@@ -37,7 +37,7 @@
                                     <TextBox Text="{Binding Longitude, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
                                     <TextBlock Margin="1 0 0 0" Text="Ширина:  "/>
                                     <TextBox Text="{Binding Latitude, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"/>
-                                    <Button Margin="1 0 0 0" Content="Загрузить" Command="{Binding DownloadCommand}"/>
+                                    <Button Margin="1 0 0 0" Content="Загрузить" Command="{Binding ChangeCoordinatesCommand}"/>
                                 </StackPanel>
                             </Border>
                         </DataTemplate>
@@ -50,23 +50,23 @@
                     <StackPanel Orientation="Vertical">
                         <Button Content="Скопировать всё" Command="{Binding CopyCommand}"/>
                         <ItemsControl ItemsSource="{Binding DtpsCoordinates}">
-                    <ItemsControl.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <StackPanel Orientation="Vertical"/>
-                        </ItemsPanelTemplate>
-                    </ItemsControl.ItemsPanel>
-                    <ItemsControl.ItemTemplate>
-                        <DataTemplate>
-                            <Border>
-                                <StackPanel Orientation="Horizontal">
-                                        <TextBox IsReadOnly="True" Text="{Binding Into, Mode=OneWay}"/>
-                                    </StackPanel>
-                            </Border>
-                        </DataTemplate>
-                    </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                    
-                </StackPanel>
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Vertical"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBox IsReadOnly="True" Text="{Binding Into, Mode=OneWay}"/>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <Button Content="Загрузить в БД" Command="{Binding DownloadCommand}"/>
+                    </StackPanel>
                 </ScrollViewer>
             </TabItem>
         </TabControl>

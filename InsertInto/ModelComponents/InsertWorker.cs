@@ -21,8 +21,6 @@ namespace InsertInto.ModelComponents
             _dtpList = new List<DTP>();
 
             _eventAggregator = EventAggregator.GetInstance();
-            _bdWorker = BDWorker.GetInstance();
-            var res = _bdWorker.SQLConnected();
         }
 
         #endregion
@@ -31,7 +29,6 @@ namespace InsertInto.ModelComponents
 
         private readonly List<DTP> _dtpList;
         private readonly EventAggregator _eventAggregator;
-        private readonly BDWorker _bdWorker;
         #endregion
 
         #region Properties

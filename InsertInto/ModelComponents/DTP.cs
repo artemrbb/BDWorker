@@ -65,7 +65,7 @@ namespace InsertInto.ModelComponents
             }
         }
 
-        public Command DownloadCommand 
+        public Command ChangeCoordinatesCommand 
         {
             get => new Command(() =>
             {
