@@ -22,8 +22,7 @@ namespace InsertInto.ModelComponents
 
             _eventAggregator = EventAggregator.GetInstance();
             _bdWorker = BDWorker.GetInstance();
-            //var res = _bdWorker.SQLConnected();
-            ;
+            var res = _bdWorker.SQLConnected();
         }
 
         #endregion
