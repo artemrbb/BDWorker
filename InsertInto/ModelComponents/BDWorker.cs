@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Windows;
+using UltimateCore;
 using UltimateCore.AppManagement;
 using UltimateCore.LRI;
 
@@ -36,28 +37,24 @@ namespace InsertInto.ModelComponents
             });
         }
 
-        public Result<bool> CreateTable(string tableName, NpgsqlConnection npgsql) 
+        public Result<bool> CreateTable(MonthEnum tableName, NpgsqlConnection npgsql) 
         {
             return new Result<bool>(() =>
             {
                 if (npgsql.FullState != ConnectionState.Broken || npgsql.FullState != ConnectionState.Closed)
                 {
-                    try
+                    var resConnect = new Result<bool>(() => 
                     {
-                        NpgsqlCommand createTable = new NpgsqlCommand($"CREATE TABLE {tableName}(n varchar(100), d varchar(500), l1 varchar(100), l2 varchar(100))", npgsql);
+                        NpgsqlCommand createTable = new NpgsqlCommand($"CREATE TABLE {tableName.GetDescription()}(n varchar(100), d varchar(500), l1 varchar(100), l2 varchar(100))", npgsql);
                         int resCreate = createTable.ExecuteNonQuery();
-                    }
-                    catch (PostgresException ex)
+                        return true;
+                    });
+                    if (!resConnect.IsOk && resConnect.ErrorMessage.StartsWith("42P07")) 
                     {
-                        switch (ex.Code) 
-                        {
-                            case "42P07":
-                                NpgsqlCommand dropTable = new NpgsqlCommand($"DROP TABLE public.{tableName}", npgsql);
-                                int resDrop = dropTable.ExecuteNonQuery();
-                                NpgsqlCommand createTable = new NpgsqlCommand($"CREATE TABLE {tableName}(n varchar(100), d varchar(500), l1 varchar(100), l2 varchar(100))", npgsql);
-                                int resCreate = createTable.ExecuteNonQuery(); break;
-                            default: MessageBox.Show("Ошибка в BDWorker'e. В switch'e не обработана ошибка"); break;
-                        }
+                        NpgsqlCommand dropTable = new NpgsqlCommand($"DROP TABLE public.{tableName.GetDescription()}", npgsql);
+                        int resDrop = dropTable.ExecuteNonQuery();
+                        NpgsqlCommand createTable = new NpgsqlCommand($"CREATE TABLE {tableName.GetDescription()}(n varchar(100), d varchar(500), l1 varchar(100), l2 varchar(100))", npgsql);
+                        int resCreate = createTable.ExecuteNonQuery();
                     }
                 }
                 else

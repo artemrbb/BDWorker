@@ -1,4 +1,7 @@
-﻿using System.Windows;
+﻿using System.Globalization;
+using System.Threading;
+using System.Windows;
+using UltimateCore;
 using UltimateCore.CN;
 using UltimateCore.EventManagement;
 
@@ -8,7 +11,7 @@ namespace InsertInto.ModelComponents
     {
         #region Constructor
 
-        public DTP(string tableName, int id, string type, double longitude, double latitude, string adress)
+        public DTP(MonthEnum tableName, int id, string type, double longitude, double latitude, string adress)
         {
             _tableName = tableName;
             _id = id;
@@ -22,7 +25,7 @@ namespace InsertInto.ModelComponents
 
         #region Fields
 
-        private string _tableName;
+        private MonthEnum _tableName;
         private int _id;
         private string _type;
         private string _longitude;
@@ -34,7 +37,7 @@ namespace InsertInto.ModelComponents
         #region Properties
 
 
-        public string TableName { get => _tableName; }
+        public MonthEnum TableName { get => _tableName; }
         public int Id { get => _id; }
         public string Type { get => _type; }
         public string Longitude { get => _longitude; set { _longitude = value; OnPropertyChanged(() => Longitude); } }
@@ -49,12 +52,12 @@ namespace InsertInto.ModelComponents
 
         public string InsertInto()
         {
-            return $@"insert into {TableName} values('{Id}','{Type}','{Latitude.Replace(',','.')}','{Longitude.Replace(',','.')}');";
+            return $@"insert into {TableName.GetDescription()} values('{Id}','{Type}','{Latitude.Replace(',','.')}','{Longitude.Replace(',','.')}');";
         }
 
         public void Dowload() 
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("en-US"); // эта херь ломает мне даты
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-US");
             if (double.TryParse(Longitude, out double lon) && double.TryParse(Latitude, out double lan) && lon != 0 && lan != 0)
             {
                 EventAggregator.GetInstance().Push(this);

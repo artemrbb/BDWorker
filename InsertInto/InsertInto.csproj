@@ -132,6 +132,7 @@
     <Compile Include="ModelComponents\BDWorker.cs" />
     <Compile Include="ModelComponents\DTP.cs" />
     <Compile Include="ModelComponents\InsertWorker.cs" />
+    <Compile Include="ModelComponents\MonthEnum.cs" />
     <Compile Include="MVVM\InsertIntoModel.cs" />
     <Compile Include="MVVM\InsertIntoView.xaml.cs">
       <DependentUpon>InsertIntoView.xaml</DependentUpon>

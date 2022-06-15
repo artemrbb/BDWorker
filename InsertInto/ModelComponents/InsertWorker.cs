@@ -33,9 +33,6 @@ namespace InsertInto.ModelComponents
 
         #region Properties
 
-        public string PathFile { get; private set; }
-        public string FileName { get; private set; }
-
 
         #endregion
 
@@ -45,22 +42,22 @@ namespace InsertInto.ModelComponents
         {
             return new Result<List<DTP>>(() =>
             {
-                PathFile = pathFile;
 
                 int pageCount = 0;
-                PdfReader pdfReader = new PdfReader(PathFile);
-                pageCount = pdfReader.NumberOfPages;
-
                 List<string> parseString = new List<string>();
-                for (int page = 1; page <= pageCount; page++)
-                {
-                    var strategy = new SimpleTextExtractionStrategy();
-                    string text = PdfTextExtractor.GetTextFromPage(pdfReader, page, strategy);
-                    text = Encoding.UTF8.GetString(ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(text)));
-                    parseString.Add(text);
-                }
 
-                pdfReader.Close();
+                using (PdfReader pdfReader = new PdfReader(pathFile))
+                {
+                    pageCount = pdfReader.NumberOfPages;
+
+                    for (int page = 0; page < pageCount; page++)
+                    {
+                        var strategy = new SimpleTextExtractionStrategy();
+                        string text = PdfTextExtractor.GetTextFromPage(pdfReader, page + 1, strategy);
+                        text = Encoding.UTF8.GetString(ASCIIEncoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(text)));
+                        parseString.Add(text);
+                    }
+                }
 
                 List<string> resLines = new List<string>();
 
@@ -111,7 +108,7 @@ namespace InsertInto.ModelComponents
                     double longitude = 0;
                     double latitude = 0;
                     string type = null;
-                    string tableName = null;
+                    MonthEnum tableName = default(MonthEnum);
 
                     var resSplit = line.Split(' ');
                     var typeOff = false;
@@ -122,10 +119,10 @@ namespace InsertInto.ModelComponents
                             id = resIntParse;
                         }
 
-                        var resDatePars = DateParse(resSplit[i]).ResultObject; //исключить последнюю строчку в первом пэйдж. т.к написана дата ненужная
-                        if (resDatePars != null) 
+                        var resDatePars = DateParse(resSplit[i]); //исключить последнюю строчку в первом пэйдж. т.к написана дата ненужная
+                        if (resDatePars.IsOk && resDatePars.ResultObject != MonthEnum.None)
                         {
-                            tableName = resDatePars;
+                            tableName = resDatePars.ResultObject;
                         }
 
                         if (i > 3 && typeOff == false)
@@ -162,36 +159,22 @@ namespace InsertInto.ModelComponents
                 //    actDtp.Dowload();
                 //}
                 _eventAggregator.Push(actual);
-                ;
                 return _dtpList.Where(p => p.Latitude == "0" || p.Longitude == "0").ToList();
             });
-
         }
-        private Result<string> DateParse(string date) 
+        private Result<MonthEnum> DateParse(string date) 
         {
-            return new Result<string>(() =>
+            return new Result<MonthEnum>(() =>
             {
                 if (DateTime.TryParseExact(date, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime resParseDate))
                 {
-                    switch (resParseDate.Month)
-                    {
-                        case 01: return "januaryTable";
-                        case 02: return "februaryTable";
-                        case 03: return "marchTable";
-                        case 04: return "aprilTable";
-                        case 05: return "mayTable";
-                        case 06: return "juneTable";
-                        case 07: return "julyTable";
-                        case 08: return "augustTable";
-                        case 09: return "septemberTable";
-                        case 10: return "octoberTable";
-                        case 11: return "novemberTable";
-                        case 12: return "decemberTable";
-                    }
+                    return (MonthEnum)resParseDate.Month;
                 }
 
-                return null;
+                return MonthEnum.None;
+
             });
+
         }
 
         #endregion

@@ -18,7 +18,6 @@ namespace InsertInto.MVVM
 
         #region Fields
 
-        private string _pathFile;
         private readonly InsertWorker _insertWorker;
         private readonly BDWorker _bdWorker;
 
@@ -26,15 +25,14 @@ namespace InsertInto.MVVM
 
         #region Properties
 
-        public string PathFile { get => _pathFile; set => _pathFile = value; }
 
         #endregion
 
         #region Methods
 
-        public Result<List<DTP>> Converter()
+        public Result<List<DTP>> Converter(string pathFile)
         {
-            return _insertWorker.Parser(_pathFile);
+            return _insertWorker.Parser(pathFile);
         }
 
         public Result<bool> BDWork(List<DTP> dtpList) 
@@ -44,9 +42,9 @@ namespace InsertInto.MVVM
                 var resConnect = _bdWorker.SQLConnected();
                 if (!resConnect.IsOk)
                 {
-                    // ошибка в подключении
+                    // ошибка в подключении. Код ниже, полное безобразие. нужно скорректировать и избавиться от форичей
                 }
-                List<string> namesTable = new List<string>();
+                List<MonthEnum> namesTable = new List<MonthEnum>();
                 foreach (var dtp in dtpList) 
                 {
                     if (namesTable.Contains(dtp.TableName))

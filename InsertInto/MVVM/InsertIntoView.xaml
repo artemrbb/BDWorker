@@ -15,7 +15,7 @@
         <DockPanel>
             <Menu DockPanel.Dock="Top">
                 <MenuItem Header="Файл">
-                    <MenuItem Header="Открыть файл" Command ="{Binding NewFileCommand}"/>
+                    <MenuItem Header="Открыть файл" Command ="{Binding OpenFileCommand}"/>
                 </MenuItem>
             </Menu>
         </DockPanel>

@@ -7,11 +7,15 @@ using UltimateCore.AppManagement;
 using UltimateCore.CN;
 using UltimateCore.EventManagement;
 using System.Linq;
+using UltimateCore.LRI;
+using System.Threading;
+using System.Globalization;
 
 namespace InsertInto.MVVM
 {
     public class InsertIntoViewModel : Notifier, IHandle<List<DTP>>, IHandle<DTP>
     {
+
         #region Constructor
 
         public InsertIntoViewModel(AppFactory appFactory, EventAggregator eventAggregator, ObservableCollection<DTP> dtps)
@@ -19,9 +23,7 @@ namespace InsertInto.MVVM
             _appFactory = appFactory;
             _model = _appFactory.GetClass<InsertIntoModel>();
             _eventAggregator = eventAggregator;
-            _eventAggregator.Subscribe(this);
             
-            _isOpenFile = false;
             _dtps = dtps;
             _dtpsCoordinates = new ObservableCollection<DTP>();
         }
@@ -30,12 +32,11 @@ namespace InsertInto.MVVM
 
         #region Fields
 
-        InsertIntoModel _model;
+        private readonly InsertIntoModel _model;
         private readonly AppFactory _appFactory;
         private ObservableCollection<DTP> _dtps;
         private ObservableCollection<DTP> _dtpsCoordinates;
-        private EventAggregator _eventAggregator;
-        private bool _isOpenFile;
+        private readonly EventAggregator _eventAggregator;
 
         #endregion
 
@@ -48,24 +49,30 @@ namespace InsertInto.MVVM
 
         #region Methods
 
+        public Result<bool> Init() 
+        {
+            return new Result<bool>(() =>
+            {
+                _eventAggregator.Subscribe(this);
 
+                return true;
+            });
+        }
 
         #endregion
 
         #region Command
 
-        public Command NewFileCommand
+        public Command OpenFileCommand
         { 
             get => new Command(() =>
             {
                 OpenFileDialog openFileDialog = new OpenFileDialog();
                 openFileDialog.Filter = "Файлы PDF (*.pdf)|*.pdf";
                 openFileDialog.InitialDirectory = @"C:\Dowloads";
-                if (openFileDialog.ShowDialog() == true)
+                if (openFileDialog.ShowDialog().Value)
                 {
-                    _isOpenFile = true;
-                    _model.PathFile = openFileDialog.FileName;
-                    var res = _model.Converter();
+                    var res = _model.Converter(openFileDialog.FileName);
                     if (res.IsOk) 
                     {
                         Dtps.Clear();
@@ -82,16 +89,14 @@ namespace InsertInto.MVVM
         {
             get => new Command(() =>
             {
-                if (_isOpenFile == true) 
+                string text = string.Empty;
+                foreach (var dtps in DtpsCoordinates)
                 {
-                    string text = string.Empty;
-                    foreach (var dtps in DtpsCoordinates)
-                    {
-                        text += dtps.InsertInto() + "\n";
-                    }
-
-                    Clipboard.SetText(text);
+                    text += dtps.InsertInto() + "\n";
                 }
+                if (string.IsNullOrEmpty(text))
+                    return;
+                Clipboard.SetText(text);
             });
         }
 
@@ -122,7 +127,7 @@ namespace InsertInto.MVVM
 
         public bool Handled(DTP data)
         {
-            System.Threading.Thread.CurrentThread.CurrentCulture = new System.Globalization.CultureInfo("ru-RU");
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("ru-RU");
             Dtps.Remove(data);
             DtpsCoordinates.Add(data);
             OnPropertyChanged(() => Dtps);
