@@ -56,6 +56,8 @@ namespace InsertInto.ModelComponents
                         NpgsqlCommand createTable = new NpgsqlCommand($"CREATE TABLE {tableName.GetDescription()}(n varchar(100), d varchar(500), l1 varchar(100), l2 varchar(100))", npgsql);
                         int resCreate = createTable.ExecuteNonQuery();
                     }
+
+
                 }
                 else
                 {
@@ -66,16 +68,29 @@ namespace InsertInto.ModelComponents
             });
         }
 
-        public Result<bool> InsertInto(string intoCommand, NpgsqlConnection npgsql) 
+        public Result<bool> InsertInto(DTP dtp, NpgsqlConnection npgsql) 
         {
             return new Result<bool>(() =>
             {
-                NpgsqlCommand insertCommand = new NpgsqlCommand(intoCommand, npgsql);
-                int resInsert = insertCommand.ExecuteNonQuery();
+                var resTemporaryTab = new Result<bool>(() =>
+                {
+                    NpgsqlCommand insertCommand = new NpgsqlCommand(dtp.Into, npgsql);
+                    int resInsert = insertCommand.ExecuteNonQuery();
+                    return true;
+                });
+                if (!resTemporaryTab.IsOk)
+                    return false; // ошибка
+
+                //var resMapLayer = new Result<bool>(() =>          ДОПИСАТЬ
+                //{
+                //    NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с 01.06 по 05.06'", npgsql);
+                //    return true;
+                //});
+
+
                 return true;
             });
         }
-
 
         #endregion
     }

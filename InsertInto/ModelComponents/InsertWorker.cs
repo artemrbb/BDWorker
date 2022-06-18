@@ -113,6 +113,7 @@ namespace InsertInto.ModelComponents
                     double latitude = 0;
                     string type = null;
                     MonthEnum tableName = default(MonthEnum);
+                    DateTime dateTime = default(DateTime);
 
                     var resSplit = line.Split(' ');
                     var typeOff = false;
@@ -123,12 +124,13 @@ namespace InsertInto.ModelComponents
                             id = resIntParse;
                         }
 
-                        var resDatePars = DateParse(resSplit[i]);
-                        if (resDatePars.IsOk && resDatePars.ResultObject != MonthEnum.None)
+                        var resMonthParse = MonthEnumParse(resSplit[i]);
+                        if (resMonthParse.IsOk && resMonthParse.ResultObject != MonthEnum.None)
                         {
-                            tableName = resDatePars.ResultObject;
+                            tableName = resMonthParse.ResultObject;
+                            dateTime = DateTime.Parse(resSplit[i]);
                         }
-
+                        ;
                         if (i > 3 && typeOff == false)
                         {
                             if (resSplit[i].StartsWith("Самарская"))
@@ -155,7 +157,7 @@ namespace InsertInto.ModelComponents
                         }
                     }
                     ;
-                    _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line));
+                    _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line, dateTime));
                 }
                 var actual = _dtpList.Where(p => p.Latitude != "0" || p.Longitude != "0").ToList();
 
@@ -163,13 +165,13 @@ namespace InsertInto.ModelComponents
                 return _dtpList.Where(p => p.Latitude == "0" || p.Longitude == "0").ToList();
             });
         }
-        private Result<MonthEnum> DateParse(string date) 
+        private Result<MonthEnum> MonthEnumParse(string tableName) 
         {
             return new Result<MonthEnum>(() =>
             {
-                if (DateTime.TryParseExact(date, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime resParseDate))
+                if (DateTime.TryParseExact(tableName, "dd.MM.yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime resParseEnum))
                 {
-                    return (MonthEnum)resParseDate.Month;
+                    return (MonthEnum)resParseEnum.Month;
                 }
 
                 return MonthEnum.None;

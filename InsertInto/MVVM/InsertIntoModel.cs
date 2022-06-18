@@ -57,7 +57,9 @@ namespace InsertInto.MVVM
 
                 foreach (var dtp in dtpList) 
                 {
-                    var resInsert = _bdWorker.InsertInto(dtp.Into,resConnect.ResultObject);
+                    // перед тем как запушить, нужно отсортировать даты
+
+                    var resInsert = _bdWorker.InsertInto(dtp, resConnect.ResultObject);
                 }
 
                 return true;

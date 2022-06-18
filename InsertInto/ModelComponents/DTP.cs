@@ -1,4 +1,5 @@
 ﻿using InsertInto.Contracts;
+using System;
 using System.Globalization;
 using System.Threading;
 using System.Windows;
@@ -12,7 +13,7 @@ namespace InsertInto.ModelComponents
     {
         #region Constructor
 
-        public DTP(MonthEnum tableName, int id, string type, double longitude, double latitude, string adress)
+        public DTP(MonthEnum tableName, int id, string type, double longitude, double latitude, string adress, DateTime date)
         {
             _tableName = tableName;
             _id = id;
@@ -20,6 +21,8 @@ namespace InsertInto.ModelComponents
             _longitude = longitude.ToString();
             _latitude = latitude.ToString();
             _adress = adress;
+            _date = date;
+
         }
 
         #endregion
@@ -32,6 +35,7 @@ namespace InsertInto.ModelComponents
         private string _longitude;
         private string _latitude;
         private string _adress;
+        private DateTime _date;
 
         #endregion
 
@@ -45,6 +49,7 @@ namespace InsertInto.ModelComponents
         public string Latitude { get => _latitude; set {_latitude = value; OnPropertyChanged(() => Latitude); } }
         public string Adress { get => _adress; set => _adress = value; }
         public string Into { get => InsertInto(); }
+        public DateTime Date { get => _date; set => _date = value; }
 
 
         #endregion
