@@ -80,7 +80,7 @@ namespace InsertInto.ModelComponents
                         }
 
                         arrayChar = lines[i].ToCharArray();
-                        for (var c = 0; c < arrayChar.Length - 1; c++) // цикл проверить
+                        for (var c = 0; c < arrayChar.Length - 1; c++) // цикл проверить, присваивает ненужные чары вместо айдишников "Назначительная"
                         {
                             if (arrayChar[c] == ' ')
                                 break;
@@ -92,6 +92,10 @@ namespace InsertInto.ModelComponents
                             resLines.Add($"{++j} " + lines[i]);
                             continue;
                         }
+
+                        if (lines[i].StartsWith("Список ДТП"))
+                            break;
+
 
                         resLines.Insert(resLines.Count - 1, resLines[resLines.Count - 1] + " " + lines[i]);
                         resLines.RemoveAt(resLines.Count - 1);
@@ -119,7 +123,7 @@ namespace InsertInto.ModelComponents
                             id = resIntParse;
                         }
 
-                        var resDatePars = DateParse(resSplit[i]); //исключить последнюю строчку в первом пэйдж. т.к написана дата ненужная
+                        var resDatePars = DateParse(resSplit[i]);
                         if (resDatePars.IsOk && resDatePars.ResultObject != MonthEnum.None)
                         {
                             tableName = resDatePars.ResultObject;
@@ -154,10 +158,7 @@ namespace InsertInto.ModelComponents
                     _dtpList.Add(new DTP(tableName, id, type, longitude, latitude, line));
                 }
                 var actual = _dtpList.Where(p => p.Latitude != "0" || p.Longitude != "0").ToList();
-                //foreach (var actDtp in actual) 
-                //{
-                //    actDtp.Dowload();
-                //}
+
                 _eventAggregator.Push(actual);
                 return _dtpList.Where(p => p.Latitude == "0" || p.Longitude == "0").ToList();
             });
@@ -174,7 +175,6 @@ namespace InsertInto.ModelComponents
                 return MonthEnum.None;
 
             });
-
         }
 
         #endregion

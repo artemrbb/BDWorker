@@ -129,6 +129,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Contracts\ReturnDTPContract.cs" />
     <Compile Include="ModelComponents\BDWorker.cs" />
     <Compile Include="ModelComponents\DTP.cs" />
     <Compile Include="ModelComponents\InsertWorker.cs" />

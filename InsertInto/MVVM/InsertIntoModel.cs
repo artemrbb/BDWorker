@@ -1,6 +1,5 @@
 ﻿using InsertInto.ModelComponents;
 using System.Collections.Generic;
-using System.Linq;
 using UltimateCore.LRI;
 
 namespace InsertInto.MVVM
@@ -42,7 +41,7 @@ namespace InsertInto.MVVM
                 var resConnect = _bdWorker.SQLConnected();
                 if (!resConnect.IsOk)
                 {
-                    // ошибка в подключении. Код ниже, полное безобразие. нужно скорректировать и избавиться от форичей
+                    return false;// пуш на ошибку или лог 
                 }
                 List<MonthEnum> namesTable = new List<MonthEnum>();
                 foreach (var dtp in dtpList) 

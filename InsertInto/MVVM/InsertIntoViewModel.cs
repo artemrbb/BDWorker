@@ -10,10 +10,11 @@ using System.Linq;
 using UltimateCore.LRI;
 using System.Threading;
 using System.Globalization;
+using InsertInto.Contracts;
 
 namespace InsertInto.MVVM
 {
-    public class InsertIntoViewModel : Notifier, IHandle<List<DTP>>, IHandle<DTP>
+    public class InsertIntoViewModel : Notifier, IHandle<List<DTP>>, IHandle<DTP>, IHandle<ReturnDTPContract>
     {
 
         #region Constructor
@@ -132,6 +133,21 @@ namespace InsertInto.MVVM
             DtpsCoordinates.Add(data);
             OnPropertyChanged(() => Dtps);
             OnPropertyChanged(() => DtpsCoordinates);
+            return true;
+        }
+
+        public bool Handled(ReturnDTPContract data)
+        {
+            data.Result = new Result<bool>(() =>
+            {
+                var dtp = data.DTP;
+                DtpsCoordinates.Remove(dtp);
+                Dtps.Add(dtp);
+                OnPropertyChanged(() => DtpsCoordinates);
+                OnPropertyChanged(() => Dtps);
+                return true;
+            });
+
             return true;
         }
 

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using InsertInto.Contracts;
+using System.Globalization;
 using System.Threading;
 using System.Windows;
 using UltimateCore;
@@ -74,6 +75,14 @@ namespace InsertInto.ModelComponents
             {
                 Dowload();
 
+            });
+        }
+
+        public Command ReturnChangeCommand 
+        {
+            get => new Command(() =>
+            {
+                EventAggregator.GetInstance().Push(new ReturnDTPContract(this));
             });
         }
 
