@@ -1,6 +1,8 @@
 ﻿using Npgsql;
+using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Linq;
 using System.Windows;
 using UltimateCore;
 using UltimateCore.AppManagement;
@@ -81,11 +83,55 @@ namespace InsertInto.ModelComponents
                 if (!resTemporaryTab.IsOk)
                     return false; // ошибка
 
-                //var resMapLayer = new Result<bool>(() =>          ДОПИСАТЬ
-                //{
-                //    NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с 01.06 по 05.06'", npgsql);
-                //    return true;
-                //});
+            return true;
+            });
+        }
+
+        public Result<bool> MapLayer(List<DateTime> firstDate, List<DateTime> lastDate, NpgsqlConnection npgsql) 
+        {
+            return new Result<bool>(() =>
+            {
+                var resMapLayer = new Result<bool>(() =>
+                {
+                    try
+                    {
+                        if (lastDate.Count == 0) 
+                        {
+                            NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с 07.06 по 08.09'", npgsql);
+                            NpgsqlDataReader readerMapLayer = searchMapLayer.ExecuteReader();
+                            if (readerMapLayer.HasRows)
+                            {
+                                while (readerMapLayer.Read())
+                                {
+                                    for (var i = 0; i < readerMapLayer.FieldCount; i++)
+                                    {
+                                        if (readerMapLayer.GetFieldType(i).ToString() == "System.Guid")
+                                        {
+                                            var res2 = readerMapLayer.GetGuid(i).ToString();
+                                            ;
+                                        }
+                                    }
+                                }
+                            }
+                            else 
+                            {
+                                return false;
+                            }
+                            
+                        }
+                        else
+                        {
+                            NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с {firstDate.First().ToString("dd.MM")} по {firstDate.Last().Date.ToString("dd.MM")}'", npgsql);
+                            NpgsqlDataReader readerMapLayer = searchMapLayer.ExecuteReader();
+                        }
+                    }
+                    catch (PostgresException code) 
+                    {
+
+                    }
+                    return true;
+                });
+
 
 
                 return true;

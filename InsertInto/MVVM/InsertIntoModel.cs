@@ -1,5 +1,7 @@
 ﻿using InsertInto.ModelComponents;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UltimateCore.LRI;
 
 namespace InsertInto.MVVM
@@ -44,23 +46,57 @@ namespace InsertInto.MVVM
                     return false;// пуш на ошибку или лог 
                 }
                 List<MonthEnum> namesTable = new List<MonthEnum>();
-                foreach (var dtp in dtpList) 
+                List<DateTime> allDate = new List<DateTime>();
+                List<DateTime> firstDate = new List<DateTime>();
+                List<DateTime> lastDate = new List<DateTime>();
+                foreach (var dtp in dtpList)
                 {
+                    allDate.Add(dtp.Date);
                     if (namesTable.Contains(dtp.TableName))
                         continue;
                     namesTable.Add(dtp.TableName);
                 }
-                foreach (var tables in namesTable) 
-                {
-                    var resCreate = _bdWorker.CreateTable(tables, resConnect.ResultObject);
-                }
 
-                foreach (var dtp in dtpList) 
+                for (int i = 1; i < 13; i++)
                 {
-                    // перед тем как запушить, нужно отсортировать даты
-
-                    var resInsert = _bdWorker.InsertInto(dtp, resConnect.ResultObject);
+                    var months = allDate.Where(p => p.Month == i).ToList();
+                    if (months.Count != 0) 
+                    {
+                        months.Sort();
+                        var resFirstDay = months.First();
+                        var resLastDay = months.Last();
+                        if (namesTable.Count > 1)
+                        {
+                            if (firstDate.Count != 0)
+                            {
+                                lastDate.Add(resFirstDay);
+                                lastDate.Add(resLastDay);
+                                break;
+                            }
+                            firstDate.Add(resFirstDay);
+                            firstDate.Add(resLastDay);
+                        }
+                        else 
+                        {
+                            firstDate.Add(resFirstDay);
+                            firstDate.Add(resLastDay);
+                            break;
+                        }
+                    }
                 }
+                //foreach (var tables in namesTable)
+                //{
+                //    var resCreate = _bdWorker.CreateTable(tables, resConnect.ResultObject);
+                //}
+
+                //foreach (var dtp in dtpList)
+                //{
+                //    var resInsert = _bdWorker.InsertInto(dtp, resConnect.ResultObject);
+                //}
+
+                var resMapLayer = _bdWorker.MapLayer(firstDate, lastDate, resConnect.ResultObject);
+
+
 
                 return true;
             });
