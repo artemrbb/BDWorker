@@ -87,7 +87,7 @@ namespace InsertInto.ModelComponents
             });
         }
 
-        public Result<bool> MapLayer(List<DateTime> firstDate, List<DateTime> lastDate, NpgsqlConnection npgsql) 
+        public Result<bool> MapLayer(List<DateTime> firstDate, List<DateTime> lastDate, NpgsqlConnection npgsql) // ПЕРЕРАБОТАТЬ АРХИТЕКТУРУ ПОИСКА И СОЗДАНИИ СЛОЕВ
         {
             return new Result<bool>(() =>
             {
@@ -97,7 +97,7 @@ namespace InsertInto.ModelComponents
                     {
                         if (lastDate.Count == 0) 
                         {
-                            NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с 07.06 по 08.09'", npgsql);
+                            NpgsqlCommand searchMapLayer = new NpgsqlCommand($"SELECT * FROM public.smarts_map_layer WHERE name ='с 07.08 по 08.09'", npgsql);
                             NpgsqlDataReader readerMapLayer = searchMapLayer.ExecuteReader();
                             if (readerMapLayer.HasRows)
                             {
@@ -115,7 +115,8 @@ namespace InsertInto.ModelComponents
                             }
                             else 
                             {
-                                return false;
+                                readerMapLayer.Dispose();
+                                var res = LayerFolder("08", npgsql);
                             }
                             
                         }
@@ -134,6 +135,63 @@ namespace InsertInto.ModelComponents
 
 
 
+                return true;
+            });
+        }
+
+        private Result<bool> LayerFolder(string firstDate, NpgsqlConnection npgsql) 
+        {
+            return new Result<bool>(() =>
+            {
+                var resDate = string.Empty;
+                switch (firstDate) 
+                {
+                    case "01": resDate = "Январь 2022"; break;
+                    case "02": resDate = "Февраль 2022"; break;
+                    case "03": resDate = "Март 2022"; break;
+                    case "04": resDate = "Апрель 2022"; break;
+                    case "05": resDate = "Май 2022"; break;
+                    case "06": resDate = "Июнь 2022"; break;
+                    case "07": resDate = "Июль 2022"; break;
+                    case "08": resDate = "Август 2022"; break;
+                    case "09": resDate = "Сентябрь 2022"; break;
+                    case "10": resDate = "Октябрь 2022"; break;
+                    case "11": resDate = "Ноябрь 2022"; break;
+                    case "12": resDate = "Декабрь 2022"; break;
+                }
+                try
+                {
+                    NpgsqlCommand searchLayerFolder = new NpgsqlCommand($"SELECT * FROM public.smarts_layer_folder WHERE name ='{resDate}'", npgsql);
+                    NpgsqlDataReader readerLayerFolder = searchLayerFolder.ExecuteReader();
+                    if (readerLayerFolder.HasRows)
+                    {
+                        // делаем логику по считыванию айдишника папки
+                    }
+                    else
+                    {
+                        readerLayerFolder.Close();
+                        NpgsqlCommand searchLayerParentFolder = new NpgsqlCommand($"SELECT * FROM public.smarts_layer_folder WHERE name ='2022'", npgsql);
+                        NpgsqlDataReader readerLayerParentFolder = searchLayerParentFolder.ExecuteReader();
+                        if (readerLayerParentFolder.HasRows)
+                        {
+                            while (readerLayerParentFolder.Read())
+                            {
+                                for (var i = 0; i < readerLayerParentFolder.FieldCount; i++)
+                                {
+                                    if (readerLayerParentFolder.GetFieldType(i).ToString() == "System.Guid")
+                                    {
+                                        var res2 = readerLayerParentFolder.GetGuid(i).ToString();
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                }
+                catch (NullReferenceException code)
+                {
+
+                }
                 return true;
             });
         }
